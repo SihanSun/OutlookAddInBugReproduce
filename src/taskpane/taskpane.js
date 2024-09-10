@@ -7,32 +7,28 @@
 
 import  * as msal from "@azure/msal-browser";
 
+const setResult = (result) => {
+  const labelForResult = document.getElementById("result");
+  if (labelForResult) {
+    labelForResult.textContent = result;
+  }
+};
+
 Office.onReady((info) => {
   if (info.host === Office.HostType.Outlook) {
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
-    document.getElementById("run").onclick = signIn;
+    document.getElementById("signin").onclick = signIn;
+    document.getElementById("getAuthContext").onclick = getAuthContext;
   }
 });
 
-export async function run() {
-  /**
-   * Insert your Outlook code here
-   */
-
-  const item = Office.context.mailbox.item;
-  let insertAt = document.getElementById("item-subject");
-  let label = document.createElement("b").appendChild(document.createTextNode("Subject: "));
-  insertAt.appendChild(label);
-  insertAt.appendChild(document.createElement("br"));
-  insertAt.appendChild(document.createTextNode(item.subject));
-  insertAt.appendChild(document.createElement("br"));
-}
-
+// fccd3bcf-08f0-4b8a-b36f-520cfaa4ab51
+// aea232ad-42b1-46a3-bf4c-e7d55883d789
 
 const msalConfig = {
   auth: {
-      clientId: 'aea232ad-42b1-46a3-bf4c-e7d55883d789', // This is the ONLY mandatory field that you need to supply.
+      clientId: 'fccd3bcf-08f0-4b8a-b36f-520cfaa4ab51', // This is the ONLY mandatory field that you need to supply.
       authority: 'https://login.microsoftonline.com/common', // Replace the placeholder with your tenant subdomain        
       // navigateToLoginRequestUrl: true, // If "true", will navigate back to the original request location before processing the auth code response.
   },
@@ -82,11 +78,22 @@ msal.createNestablePublicClientApplication(msalConfig).then((result) => {
 
 export function signIn() {
   pca.loginPopup(loginRequest).then(function(response) {
-    console
+    setResult("Login successfully.")
     console.log(response);
   }).catch((error) => {
-    console.log(error);
+    setResult(error.message);
+    console.error(error);
   })
+}
+
+export function getAuthContext() {
+  Office.auth.getAuthContext().then(function(authContext) {
+    setResult("Get authContext successfully.")
+    console.log(authContext);
+  }).catch((error) => {
+    setResult(error.message);
+    console.error(error);
+  });
 }
 
 
