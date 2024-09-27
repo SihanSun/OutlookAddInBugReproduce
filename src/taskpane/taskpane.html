@@ -29,14 +29,22 @@
         <h2 class="ms-font-xl">Please <a target="_blank" href="https://learn.microsoft.com/office/dev/add-ins/testing/test-debug-office-add-ins#sideload-an-office-add-in-for-testing">sideload</a> your add-in to see app body.</h2>
     </section>
     <main id="app-body" class="ms-welcome__main" style="display: none;">
-        <div role="button" id="signin" class="ms-welcome__action ms-Button ms-Button--hero ms-font-xl">
-            <span class="ms-Button-label">Signin</span>
+        <div class="signin">
+            <div role="button" id="signin" class="ms-welcome__action ms-Button ms-Button--hero ms-font-xl">
+                <span class="ms-Button-label">Signin</span>
+            </div>
         </div>
-        <div role="button" id="getAuthContext" class="ms-welcome__action ms-Button ms-Button--hero ms-font-xl">
-            <span class="ms-Button-label">Get AuthContext</span>
+        <div>
+            <b>AuthContext</b>
+            <p><label id="authContext"></label></p>
         </div>
-        <div class="result">
-            <p><label id="result"></label></p>
+        <div>
+            <b>Current Mailbox Email</b>
+            <p><label id="mailboxEmail"></label></p>
+        </div>
+        <div>
+            <b>MSAL Active Account User Name</b>
+            <p><label id="graphUsername"></label></p>
         </div>
     </main>
 </body>

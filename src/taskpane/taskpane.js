@@ -18,8 +18,9 @@ Office.onReady((info) => {
   if (info.host === Office.HostType.Outlook) {
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
-    document.getElementById("signin").onclick = signIn;
-    document.getElementById("getAuthContext").onclick = getAuthContext;
+    document.getElementById("mailboxEmail").textContent = getMailboxEmail();
+    testAuthContext();
+    initialize();
   }
 });
 
@@ -61,38 +62,58 @@ const msalConfig = {
   },
 };
 
+const getMailboxEmail = () => {
+  return Office.context.mailbox.userProfile.emailAddress;
+};
+
 const loginRequest = {
   scopes: ["User.Read"]
 };
-
 let pca = undefined;
 
-console.log("creating pca");
-msal.createNestablePublicClientApplication(msalConfig).then((result) => {
-  console.log(result);
-  pca = result;
-  console.log(pca);
-}).catch(error => {
-  console.log(error);
-});
+const initialize = () => {
+  msal.createNestablePublicClientApplication(msalConfig).then((result) => {
+    pca = result;
+    
+    const activeAccount = pca.getActiveAccount();
+    if (activeAccount) {
+      document.getElementById("graphUsername").textContent = activeAccount.username;
+      hideSignin();
+    } else {
+      showSignin();
+    }
+  }).catch(error => {
+    console.log(error);
+  });
+}
 
-export function signIn() {
+function signIn() {
   pca.loginPopup(loginRequest).then(function(response) {
-    setResult("Login successfully.")
-    console.log(response);
+    pca.setActiveAccount(response.account);
+    document.getElementById("graphUsername").textContent = pca.getActiveAccount().username;
+    hideSignin();
   }).catch((error) => {
-    setResult(error.message);
     console.error(error);
   })
 }
 
-export function getAuthContext() {
-  Office.auth.getAuthContext().then(function(authContext) {
-    setResult("Get authContext successfully.")
-    console.log(authContext);
-  }).catch((error) => {
-    setResult(error.message);
-    console.error(error);
+function showSignin() {
+  const signInButton = document.getElementById("signin");
+  signInButton.style.display = "block";
+  signInButton.onclick = signIn;
+}
+
+function hideSignin() {
+  const signInButton = document.getElementById("signin");
+  signInButton.style.display = "none";
+  signInButton.onclick = null;
+}
+
+function testAuthContext() {
+  Office.auth.getAuthContext().then((authContext) => {
+    document.getElementById('authContext').textContent = "Available";
+  }).catch(() => {
+    document.getElementById('authContext').textContent = "Not Available";
   });
 }
 
